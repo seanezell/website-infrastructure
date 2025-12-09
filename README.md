@@ -1,5 +1,72 @@
 # website-infrastructure
-IaC for my website
+
+Terraform infrastructure as code for hosting a static website on AWS with CloudFront CDN and S3 origin.
+
+## Architecture
+
+This infrastructure provisions:
+
+- **S3 Bucket**: Hosts static website content
+- **CloudFront Distribution**: CDN for global content delivery with HTTPS
+- **Origin Access Identity (OAI)**: Secures S3 bucket access to CloudFront only
+- **ACM Certificate**: SSL/TLS certificate for custom domain (must be pre-provisioned)
+- **IAM Role**: GitHub Actions OIDC role for automated Terraform deployments
+
+## Prerequisites
+
+- AWS account with appropriate permissions
+- ACM certificate issued in `us-east-1` for your domain
+- GitHub OIDC provider configured in AWS IAM
+- S3 bucket for Terraform state: `seanezell-terraform-backend`
+- DynamoDB table for state locking: `terraform_state`
+
+## Setup
+
+1. **Configure Terraform variables**
+   
+   Create `terraform/terraform.tfvars`:
+   ```hcl
+   website_bucket_name = "your-website-bucket-name"
+   domain_name         = "www.yourdomain.com"
+   ```
+
+2. **Initialize Terraform**
+   ```bash
+   cd terraform
+   terraform init
+   ```
+
+3. **Deploy infrastructure**
+   ```bash
+   terraform plan
+   terraform apply
+   ```
+
+## GitHub Actions Deployment
+
+The repository includes automated deployment via GitHub Actions:
+
+- Triggers on pushes to `main` branch affecting `terraform/**` files
+- Uses OIDC authentication (no long-lived credentials)
+- Automatically runs `terraform plan` and `apply`
+
+**Required GitHub Secret:**
+- `AWS_ROLE_ARN`: ARN of the IAM role (output from Terraform)
+
+## Project Structure
+
+```
+.
+├── .github/workflows/
+│   └── terraform-deploy.yml    # CI/CD pipeline
+└── terraform/
+    ├── main.tf                 # Provider and backend config
+    ├── variables.tf            # Input variables
+    ├── terraform.tfvars        # Variable values
+    ├── s3.tf                   # S3 bucket resources
+    ├── cloudfront.tf           # CloudFront distribution
+    └── github-oidc.tf          # IAM role for GitHub Actions
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
