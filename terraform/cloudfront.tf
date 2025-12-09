@@ -27,7 +27,7 @@ resource "aws_cloudfront_distribution" "website" {
     is_ipv6_enabled = true
 
     origin {
-        domain_name = "${var.website_bucket_name}.s3.${var.aws_region}.amazonaws.com"
+        domain_name = "${var.website_bucket_name}.s3.us-west-2.amazonaws.com"
         origin_id   = local.origin_id
 
         s3_origin_config {
