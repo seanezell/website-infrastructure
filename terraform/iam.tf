@@ -61,15 +61,16 @@ data "aws_iam_policy_document" "deploy_policy" {
             "cloudfront:DeleteDistribution",
             "cloudfront:ListTagsForResource",
             "cloudfront:GetInvalidation",
-            "cloudfront:ListInvalidations"
+            "cloudfront:ListInvalidations",
+            "cloudfront:GetCloudFrontOriginAccessIdentity"
         ]
         resources = ["arn:aws:cloudfront::736813861381:distribution/EXHLGVHIDDRTJ"]
     }
 
     statement {
-        sid     = "S3ListAllBucketsOptional"
+        sid     = "ACMAccess"
         effect  = "Allow"
-        actions = ["s3:ListAllMyBuckets"]
+        actions = ["acm:ListCertificates"]
         resources = ["*"]
     }
 }
