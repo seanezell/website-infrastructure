@@ -29,7 +29,7 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
-# Attach policies to the role
+# Scoped policy for Terraform to manage website infrastructure
 resource "aws_iam_role_policy" "github_actions_terraform_policy" {
   name = "website_infra_githubaction_policy"
   role = aws_iam_role.github_actions_role.id
@@ -38,15 +38,51 @@ resource "aws_iam_role_policy" "github_actions_terraform_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "S3Access"
         Effect = "Allow"
         Action = [
-          "s3:*",
-          "dynamodb:*",
-          "cognito-idp:*",
-          "iam:*",
-          "sts:GetCallerIdentity",
-          "apigateway:*",
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:PutObjectAcl",
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy",
+          "s3:GetBucketAcl",
+          "s3:PutBucketAcl",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:PutBucketPublicAccessBlock"
         ]
+        Resource = [
+          aws_s3_bucket.website_bucket.arn,
+          "${aws_s3_bucket.website_bucket.arn}/*"
+        ]
+      },
+      {
+        Sid    = "CloudFrontManage"
+        Effect = "Allow"
+        Action = [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetDistribution",
+          "cloudfront:ListDistributions",
+          "cloudfront:GetDistributionConfig",
+          "cloudfront:UpdateDistribution",
+          "cloudfront:CreateDistribution",
+          "cloudfront:DeleteDistribution",
+          "cloudfront:ListTagsForResource",
+          "cloudfront:GetInvalidation",
+          "cloudfront:ListInvalidations",
+          "cloudfront:GetCloudFrontOriginAccessIdentity",
+          "cloudfront:CreateCloudFrontOriginAccessIdentity",
+          "cloudfront:UpdateCloudFrontOriginAccessIdentity"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid      = "ACMAccess"
+        Effect   = "Allow"
+        Action   = ["acm:ListCertificates", "acm:DescribeCertificate"]
         Resource = "*"
       }
     ]
