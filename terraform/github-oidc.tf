@@ -60,6 +60,29 @@ resource "aws_iam_role_policy" "github_actions_terraform_policy" {
         ]
       },
       {
+        Sid    = "TerraformStateAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::seanezell-terraform-backend",
+          "arn:aws:s3:::seanezell-terraform-backend/*"
+        ]
+      },
+      {
+        Sid    = "DynamoDBStateAccess"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:us-west-2:*:table/terraform_state"
+      },
+      {
         Sid    = "CloudFrontManage"
         Effect = "Allow"
         Action = [
