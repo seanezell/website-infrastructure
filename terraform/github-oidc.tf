@@ -45,7 +45,8 @@ resource "aws_iam_role_policy" "github_actions_terraform_policy" {
           "cognito-idp:*",
           "iam:*",
           "sts:GetCallerIdentity",
-          "apigateway:*",
+          "acm:*",
+          "cloudfront:*",
         ]
         Resource = "*"
       }
