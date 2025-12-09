@@ -38,74 +38,15 @@ resource "aws_iam_role_policy" "github_actions_terraform_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "S3Access"
         Effect = "Allow"
         Action = [
-          "s3:ListBucket",
-          "s3:GetBucketLocation",
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject",
-          "s3:PutObjectAcl",
-          "s3:GetBucketPolicy",
-          "s3:PutBucketPolicy",
-          "s3:GetBucketAcl",
-          "s3:PutBucketAcl",
-          "s3:GetBucketPublicAccessBlock",
-          "s3:PutBucketPublicAccessBlock"
+          "s3:*",
+          "dynamodb:*",
+          "cognito-idp:*",
+          "iam:*",
+          "sts:GetCallerIdentity",
+          "apigateway:*",
         ]
-        Resource = [
-          aws_s3_bucket.website_bucket.arn,
-          "${aws_s3_bucket.website_bucket.arn}/*"
-        ]
-      },
-      {
-        Sid    = "TerraformStateAccess"
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject",
-          "s3:PutObject"
-        ]
-        Resource = [
-          "arn:aws:s3:::seanezell-terraform-backend",
-          "arn:aws:s3:::seanezell-terraform-backend/*"
-        ]
-      },
-      {
-        Sid    = "DynamoDBStateAccess"
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:DeleteItem"
-        ]
-        Resource = "arn:aws:dynamodb:us-west-2:*:table/terraform_state"
-      },
-      {
-        Sid    = "CloudFrontManage"
-        Effect = "Allow"
-        Action = [
-          "cloudfront:CreateInvalidation",
-          "cloudfront:GetDistribution",
-          "cloudfront:ListDistributions",
-          "cloudfront:GetDistributionConfig",
-          "cloudfront:UpdateDistribution",
-          "cloudfront:CreateDistribution",
-          "cloudfront:DeleteDistribution",
-          "cloudfront:ListTagsForResource",
-          "cloudfront:GetInvalidation",
-          "cloudfront:ListInvalidations",
-          "cloudfront:GetCloudFrontOriginAccessIdentity",
-          "cloudfront:CreateCloudFrontOriginAccessIdentity",
-          "cloudfront:UpdateCloudFrontOriginAccessIdentity"
-        ]
-        Resource = "*"
-      },
-      {
-        Sid      = "ACMAccess"
-        Effect   = "Allow"
-        Action   = ["acm:ListCertificates", "acm:DescribeCertificate"]
         Resource = "*"
       }
     ]
