@@ -5,5 +5,13 @@ variable "website_bucket_name" {
 
 variable "domain_name" {
     type        = string
-    default     = "www.seanezell.com"
+}
+
+variable "route53_zone_name" {
+    type    = string
+}
+
+variable "route53_zone_id" {
+    description = "Hosted Zone ID for seanezell.com (created in account-level infrastructure)"
+    type        = string
 }

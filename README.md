@@ -68,6 +68,14 @@ The repository includes automated deployment via GitHub Actions:
     └── github-oidc.tf          # IAM role for GitHub Actions
 ```
 
+## DNS Ownership
+
+The Route 53 hosted zone for `seanezell.com` is created in account-level
+infrastructure.
+
+This repository consumes the hosted zone ID as an input variable to avoid
+cross-repo Terraform state coupling for personal infrastructure.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -92,6 +100,8 @@ No modules.
 | [aws_cloudfront_origin_access_identity.oai](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_origin_access_identity) | resource |
 | [aws_iam_role.github_actions_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.github_actions_terraform_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_route53_record.root](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
+| [aws_route53_record.www](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_s3_bucket.website_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_acl.website_bucket_acl](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl) | resource |
 | [aws_s3_bucket_policy.allow_cloudfront](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
@@ -103,7 +113,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | n/a | `string` | `"www.seanezell.com"` | no |
+| <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | n/a | `string` | n/a | yes |
+| <a name="input_route53_zone_id"></a> [route53\_zone\_id](#input\_route53\_zone\_id) | Hosted Zone ID for seanezell.com (created in account-level infrastructure) | `string` | n/a | yes |
+| <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | n/a | `string` | n/a | yes |
 | <a name="input_website_bucket_name"></a> [website\_bucket\_name](#input\_website\_bucket\_name) | S3 bucket name used as the CloudFront origin (existing). | `string` | n/a | yes |
 
 ## Outputs
