@@ -1,17 +1,9 @@
 # ACM certificate validation
 resource "aws_route53_record" "cert_validation" {
-    for_each = {
-        for dvo in data.aws_acm_certificate.issued.domain_validation_options : dvo.domain_name => {
-            name   = dvo.resource_record_name
-            record = dvo.resource_record_value
-            type   = dvo.resource_record_type
-        }
-    }
-
     zone_id = var.route53_zone_id
-    name    = each.value.name
-    type    = each.value.type
-    records = [each.value.record]
+    name    = "_c902b487293dea7cefd9901a4779723a.seanezell.com."
+    type    = "CNAME"
+    records = ["_a01c4af54a44d0ac1b4a4771523f8ba7.xdvyhgsvzs.acm-validations.aws."]
     ttl     = 60
 }
 
