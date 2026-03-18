@@ -27,18 +27,21 @@ resource "aws_s3_bucket_policy" "allow_cloudfront" {
     policy = jsonencode({
         Version = "2012-10-17"
         Statement = [
-        {
-            Sid       = "AllowCloudFrontServicePrincipalReadOnly"
-            Effect    = "Allow"
-            Principal = {
-            AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+            {
+                Sid       = "AllowCloudFrontServicePrincipalReadOnly"
+                Effect    = "Allow"
+                Principal = { Service = "cloudfront.amazonaws.com" }
+                Action   = ["s3:GetObject"]
+                Resource = [
+                    "${aws_s3_bucket.website_bucket.arn}",
+                    "${aws_s3_bucket.website_bucket.arn}/*"
+                ]
+                Condition = {
+                    StringEquals = {
+                        "AWS:SourceArn" = aws_cloudfront_distribution.website.arn
+                    }
+                }
             }
-            Action   = ["s3:GetObject", "s3:ListBucket"]
-            Resource = [
-            "${aws_s3_bucket.website_bucket.arn}",
-            "${aws_s3_bucket.website_bucket.arn}/*"
-            ]
-        }
         ]
     })
 }
