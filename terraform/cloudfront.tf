@@ -26,6 +26,10 @@ resource "aws_cloudfront_origin_access_control" "seanezell_oac" {
     signing_protocol                  = "sigv4"
 }
 
+data "aws_cloudfront_cache_policy" "caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
 resource "aws_cloudfront_distribution" "website" {
     enabled = true
     comment = "${var.domain_name}"
@@ -37,10 +41,6 @@ resource "aws_cloudfront_distribution" "website" {
     origin {
         domain_name = "${var.website_bucket_name}.s3.us-west-2.amazonaws.com"
         origin_id   = local.origin_id
-
-        # s3_origin_config {
-        #     origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
-        # }
         origin_access_control_id = aws_cloudfront_origin_access_control.seanezell_oac.id
     }
 
@@ -48,18 +48,8 @@ resource "aws_cloudfront_distribution" "website" {
         allowed_methods  = ["GET", "HEAD", "OPTIONS"]
         cached_methods   = ["GET", "HEAD"]
         target_origin_id = local.origin_id
-
-        forwarded_values {
-            query_string = false
-            cookies {
-                forward = "none"
-            }
-        }
-
+        cache_policy_id  = data.aws_cloudfront_cache_policy.caching_optimized.id
         viewer_protocol_policy = "redirect-to-https"
-        min_ttl                = 0
-        default_ttl            = 3600
-        max_ttl                = 86400
     }
 
     custom_error_response {
