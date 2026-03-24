@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "website" {
     }
 
     tags = {
-        Name = "website-cdn-${var.domain_name}"
+        Name = "${var.domain_name}"
         Env  = "prod"
     }
 }
