@@ -1,5 +1,6 @@
 .vscode/
 *.code-workspace
+tooling/
 
 # Local .terraform directories
 .terraform/
