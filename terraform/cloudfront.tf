@@ -1,17 +1,11 @@
 locals {
-    origin_id = "s3-${var.website_bucket_name}"
+    origin_id      = "s3-${var.website_bucket_name}"
+    domain_aliases = distinct([var.route53_zone_name, var.domain_name])
 }
 
 provider "aws" {
     alias  = "useast1"
     region = "us-east-1"
-}
-
-data "aws_acm_certificate" "issued" {
-    provider    = aws.useast1
-    domain      = "*.seanezell.com"
-    statuses    = ["ISSUED"]
-    most_recent = true
 }
 
 # resource "aws_cloudfront_origin_access_identity" "oai" {
@@ -35,7 +29,7 @@ resource "aws_cloudfront_distribution" "website" {
     comment = "${var.domain_name}"
     price_class = "PriceClass_100"  # US, Canada
     default_root_object = "index.html"
-    aliases = [var.domain_name]
+    aliases = local.domain_aliases
     is_ipv6_enabled = true
 
     origin {
@@ -67,10 +61,12 @@ resource "aws_cloudfront_distribution" "website" {
     }
 
     viewer_certificate {
-        acm_certificate_arn = data.aws_acm_certificate.issued.arn
-        ssl_support_method  = "sni-only"
+        acm_certificate_arn      = aws_acm_certificate_validation.website.certificate_arn
+        ssl_support_method       = "sni-only"
         minimum_protocol_version = "TLSv1.2_2021"
     }
+
+    depends_on = [aws_acm_certificate_validation.website]
 
     restrictions {
         geo_restriction {
